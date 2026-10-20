@@ -1,0 +1,35 @@
+import { notFound } from "next/navigation";
+import { ArrowLeft, ArrowRight, BarChart3, CalendarDays, Check, Clock3, Crown, HeartPulse, MessageCircle, MonitorSmartphone, PersonStanding, ShieldCheck, TrendingUp, UserRound, Users, WalletCards, Wrench } from "lucide-react";
+import SubpageHeader from "../../SubpageHeader";
+import RoleResponsibilities from "../../RoleResponsibilities";
+import { roleProfiles, type RoleSlug } from "../../role-data";
+import HeadRiderShowcase from "./HeadRiderShowcase";
+import OwnerHorseShowcase from "./OwnerHorseShowcase";
+import GroomShowcase from "./GroomShowcase";
+import RiderShowcase from "./RiderShowcase";
+import TrainerShowcase from "./TrainerShowcase";
+import ManagerShowcase from "./ManagerShowcase";
+
+const roles = {
+  manager:{title:"Manager stajni",lead:"Pełna kontrola nad stajnią w jednym miejscu.",copy:"Organizuj pracę zespołu, zarządzaj końmi, finansami i codziennymi obowiązkami — zawsze z pełnym obrazem sytuacji.",icon:Crown,modules:["Grafik zasobów","Rozliczenia","Struktura stajni","Pulpit","Harmonogram","Konie","Zespół","Finanse","Komunikacja","Zadania"],benefits:["Oszczędzasz czas","Masz pełną kontrolę","Zarządzasz zespołem","Widzisz finanse"],plan:"Manager",price:"0 zł",hero:"/manager-hero.jpg"},
+  owner:{title:"Właściciel",lead:"Twój koń i wszystkie informacje zawsze pod ręką.",copy:"Sprawdzaj plan, opiekę, treningi, postępy oraz rozliczenia. Kontaktuj się ze stajnią bez szukania informacji w wielu miejscach.",icon:UserRound,modules:["Mój koń","Zdrowie","Treningi","Kalendarz","Dokumenty","Płatności","Wiadomości"],benefits:["Pełny obraz konia","Plan zawsze pod ręką","Proste rozliczenia","Kontakt ze stajnią"],plan:"Właściciel",price:"od liczby koni",hero:"/owner-hero.jpg",heroPosition:"center 48%"},
+  trainer:{title:"Trener",lead:"Rozwój podopiecznych uporządkowany w jednym systemie.",copy:"Planuj treningi, zapisuj obserwacje, oceniaj postępy i utrzymuj sprawną komunikację z jeźdźcami oraz właścicielami.",icon:TrendingUp,modules:["Umawianie treningów","Zawody","Moje konie","Podopieczni","Treningi","Kalendarz","Postępy","Notatki","Konie","Wiadomości"],benefits:["Planujesz treningi","Śledzisz postępy","Masz notatki","Rozwijasz zespół"],plan:"Trener",price:"od liczby podopiecznych",hero:"/trainer-hero.jpg",heroPosition:"center 38%"},
+  "head-rider":{title:"Jeździec główny",lead:"Konie, grafik i pracownicy w jednym miejscu.",copy:"Zarządzaj ruchem koni, przydzielaj zadania, kontroluj harmonogram zespołu oraz prowadź rozliczenia z klientami.",icon:Users,modules:["Pulpit","Grafik koni","Moje konie","Pracownicy","Klienci","Rozliczenia","Wiadomości"],benefits:["Układasz grafik","Zarządzasz końmi","Koordynujesz pracę","Rozliczasz klientów"],plan:"Jeździec główny",price:"od liczby pracowników",hero:"/head-rider-hero.jpg",heroPosition:"center 58%"},
+  rider:{title:"Jeździec",lead:"Twój plan jazd i konie bez zbędnego chaosu.",copy:"Widzisz przypisane konie, plan dnia, treningi i najważniejsze informacje przekazane przez trenera lub jeźdźca głównego.",icon:PersonStanding,modules:["Mój dzień","Plan jazd","Moje konie","Treningi","Postępy","Wiadomości"],benefits:["Znasz plan dnia","Widzisz swoje konie","Odbierasz zadania","Masz szybki kontakt"],plan:"Jeździec",price:"w ramach planu stajni",hero:"/rider-hero.jpg",heroPosition:"center 46%"},
+  groom:{title:"Luzak",lead:"Codzienna opieka nad końmi zawsze dobrze zaplanowana.",copy:"Otrzymuj czytelną listę zadań, sprawdzaj przydzielone konie i szybko zgłaszaj wykonanie pracy lub ważne obserwacje.",icon:Wrench,modules:["Zadania","Konie","Karmienie","Padoki","Pielęgnacja","Zgłoszenia","Wiadomości"],benefits:["Widzisz zadania","Znasz priorytety","Zgłaszasz problemy","Nic Ci nie umyka"],plan:"Luzak",price:"w ramach planu stajni",hero:"/groom-hero.jpg",heroPosition:"center 61%"}
+} as const;
+
+export function generateStaticParams(){return Object.keys(roles).map(slug=>({slug}))}
+
+export default async function RoleDetail({params}:{params:Promise<{slug:string}>}){
+  const {slug}=await params; const role=roles[slug as keyof typeof roles]; if(!role) notFound(); const Icon=role.icon; const profile=roleProfiles[slug as RoleSlug];
+  return <main className={`role-detail-page role-${slug}`}>
+    <SubpageHeader/>
+    <section className="role-detail-hero"><div className="role-hero-copy"><a href="/role"><ArrowLeft/>Wszystkie role</a><small>Rola</small><h1>{role.title}</h1><h2>{profile.lead}</h2><p>{profile.summary}</p><div><a href="https://tally.so/r/Z95YEo">Wypróbuj Stable360 <ArrowRight/></a><a href="#produkt">Zobacz w akcji</a></div></div><div className="role-hero-photo"><img src={"hero" in role ? role.hero : "/roles-hero-horse.jpg"} style={"heroPosition" in role ? {objectPosition:role.heroPosition} : undefined} alt="Koń w stajni"/><span><Icon/><b>{role.title}</b><small>Wszystko, czego potrzebujesz w swojej roli.</small></span></div></section>
+    <RoleResponsibilities role={slug as RoleSlug}/>
+    <section className="role-stat-strip"><article><Clock3/><b>Mniej papierów</b><span>i więcej czasu</span></article><article><ShieldCheck/><b>Bezpieczne dane</b><span>chronione każdego dnia</span></article><article><MonitorSmartphone/><b>Dostęp wszędzie</b><span>telefon, tablet i komputer</span></article></section>
+    <section className="role-product" id="produkt"><small>Produkt w Twojej roli</small><h2>Zobacz Stable360 w swojej roli.</h2>{slug === "head-rider" ? <HeadRiderShowcase/> : slug === "owner" ? <OwnerHorseShowcase/> : slug === "groom" ? <GroomShowcase/> : slug === "rider" ? <RiderShowcase/> : slug === "trainer" ? <TrainerShowcase/> : slug === "manager" ? <ManagerShowcase/> : <div className="role-screen-wrap"><div className="role-module-tabs">{role.modules.map((m,i)=><span className={i===0?"active":""} key={m}>{m}</span>)}</div><aside><small>Aktualnie wybrane</small><h3>{role.modules[0]}</h3><p>Najważniejsze informacje dla roli: {role.title.toLowerCase()} — czytelnie i w jednym miejscu.</p>{role.benefits.map(x=><div key={x}><Check/>{x}</div>)}</aside><div className="role-screen role-phone"><header><img src="/stable360-logo-exact.png" alt="Stable360"/><b>Dzisiaj</b></header><div className="screen-metrics"><span><small>Zadania</small><b>8</b></span><span><small>Konie</small><b>28</b></span><span><small>Wiadomości</small><b>4</b></span></div><div className="screen-grid"><article><CalendarDays/><b>Nadchodzące</b><p>Plan dnia i najbliższe wydarzenia</p></article><article><MessageCircle/><b>Aktualności</b><p>Ważne informacje od zespołu</p></article><article><HeartPulse/><b>Postępy</b><p>Dane wymagające Twojej uwagi</p></article><article><BarChart3/><b>Podsumowanie</b><p>Wszystko pod kontrolą</p></article></div></div></div>}
+      <h3 className="role-benefits-title">Co robisz w Stable360 jako {profile.title.toLowerCase()}?</h3><div className="role-benefit-row">{profile.benefits.map((benefit,i)=>{const I=[CalendarDays,Check,Users,WalletCards][i];return <article key={benefit.title}><small>0{i+1}</small><i><I/></i><div><b>{benefit.title}</b><span>{benefit.detail}</span></div></article>})}</div>
+    </section>
+  </main>
+}
