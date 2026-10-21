@@ -3,7 +3,6 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "installCommand": "npm ci --ignore-scripts --no-audit --no-fund",
-  "outputDirectory": "out",
   "cleanUrls": true,
   "trailingSlash": false
 }
